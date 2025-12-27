@@ -1,1 +1,794 @@
-# skk99999.github.io
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OC元素扭蛋机 | 原创角色生成器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fffbf5 0%, #fef8f0 100%);
+            color: #7d6e63;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #f6a8a8;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.8);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a08c7e;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.5;
+        }
+        
+        .instructions {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 15px 25px;
+            max-width: 900px;
+            margin: 0 auto 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+            border-left: 5px solid #f8d8bf;
+        }
+        
+        .instructions h2 {
+            color: #a08c7e;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .gacha-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .gacha-machine {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+        
+        .gacha-machine:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .gacha-machine.active {
+            border-color: #f6a8a8;
+        }
+        
+        .gacha-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .gacha-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #7d6e63;
+            display: flex;
+            align-items: center;
+        }
+        
+        .gacha-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-size: 1.3rem;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gacha-display {
+            background-color: #fef8f0;
+            border-radius: 15px;
+            padding: 20px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 2px dashed #f8d8bf;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .element-placeholder {
+            color: #c8b7a6;
+            font-style: italic;
+            text-align: center;
+        }
+        
+        .element-result {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #7d6e63;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .spin-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .spin-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .spin-button:disabled {
+            background: #e0d8d0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .spin-button i {
+            margin-right: 8px;
+        }
+        
+        .result-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-title {
+            font-size: 1.8rem;
+            color: #7d6e63;
+        }
+        
+        .combine-button {
+            padding: 12px 25px;
+            background: linear-gradient(to right, #f8c3cd, #f6a8a8);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .combine-button:hover {
+            background: linear-gradient(to right, #f6b2be, #f49898);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .combine-button:disabled {
+            background: #e0d8d0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .combine-button i {
+            margin-right: 8px;
+        }
+        
+        .oc-display {
+            background-color: #fef8f0;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #f8d8bf;
+            position: relative;
+            z-index: 1;
+        }
+        /* 增强版样式，用于截图时 */
+        
+        .oc-display.screenshot-mode {
+            background-color: #fef5e7 !important;
+            /* 更饱满的背景色 */
+            border: 3px solid #f8d8bf !important;
+            /* 更明显的边框 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+            /* 更强的阴影 */
+        }
+        
+        .oc-placeholder {
+            color: #c8b7a6;
+            font-style: italic;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .oc-result {
+            width: 100%;
+            animation: fadeIn 0.8s;
+        }
+        
+        .oc-intro {
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            border-left: 5px solid #f6a8a8;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #7d6e63;
+        }
+        /* 增强版简介样式 */
+        
+        .oc-display.screenshot-mode .oc-intro {
+            background-color: white !important;
+            border-left: 6px solid #f6a8a8 !important;
+            /* 更宽的左侧边框 */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+            /* 更强的阴影 */
+            padding: 25px !important;
+            /* 更多内边距 */
+        }
+        
+        .oc-intro-title {
+            font-weight: bold;
+            color: #f6a8a8;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .oc-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .oc-detail-item {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #f8d8bf;
+        }
+        /* 增强版详情项样式 */
+        
+        .oc-display.screenshot-mode .oc-detail-item {
+            background-color: white !important;
+            border-left: 5px solid #f8d8bf !important;
+            /* 更宽的左侧边框 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            /* 更强的阴影 */
+            padding: 18px !important;
+            /* 更多内边距 */
+        }
+        
+        .detail-label {
+            font-size: 0.9rem;
+            color: #a08c7e;
+            margin-bottom: 5px;
+        }
+        /* 增强版标签样式 */
+        
+        .oc-display.screenshot-mode .detail-label {
+            color: #927e6e !important;
+            /* 更深的标签颜色 */
+            font-weight: 600 !important;
+            /* 更粗的字体 */
+        }
+        
+        .detail-value {
+            font-size: 1.2rem;
+            color: #7d6e63;
+            font-weight: bold;
+        }
+        /* 增强版值样式 */
+        
+        .oc-display.screenshot-mode .detail-value {
+            color: #6d5e53 !important;
+            /* 更深的值颜色 */
+            font-weight: 700 !important;
+            /* 更粗的字体 */
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .action-button {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .reset-button {
+            background: linear-gradient(to right, #f8e6c8, #f5d3a3);
+            color: #9e7f56;
+        }
+        
+        .reset-button:hover {
+            background: linear-gradient(to right, #f7e0b6, #f3cb90);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .download-button {
+            background: linear-gradient(to right, #c8d8e8, #a0b9d8);
+            color: white;
+        }
+        
+        .download-button:hover {
+            background: linear-gradient(to right, #b7c8d8, #8facca);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #a08c7e;
+            font-size: 0.9rem;
+        }
+        
+        .spinning {
+            animation: spin 0.5s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .gacha-section {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            .controls {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gacha-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-cookie"></i> OC元素扭蛋机</h1>
+            <p class="subtitle">通过扭蛋机随机抽取人设、职业、种族、武器等元素，组合生成独一无二的原创角色！</p>
+        </header>
+
+        <div class="instructions">
+            <h2><i class="fas fa-info-circle"></i> 使用说明</h2>
+            <ol>
+                <li>点击下方10个扭蛋机的"抽取"按钮，随机获取对应类别的元素</li>
+                <li>每个扭蛋机可以重复抽取，直到获得满意的元素</li>
+                <li>所有类别都抽取完毕后，点击"组合生成完整OC"按钮</li>
+                <li>生成的OC角色可以重置重新抽取，也可以保存结果</li>
+            </ol>
+        </div>
+
+        <div class="gacha-section" id="gachaSection">
+            <!-- 扭蛋机将通过JavaScript动态生成 -->
+        </div>
+
+        <div class="result-section">
+            <div class="result-header">
+                <h2 class="result-title"><i class="fas fa-user-circle"></i> 你的原创角色</h2>
+                <button class="combine-button" id="combineButton" disabled>
+                    <i class="fas fa-magic"></i> 组合生成完整OC
+                </button>
+            </div>
+
+            <div class="oc-display">
+                <div class="oc-placeholder" id="ocPlaceholder">
+                    完成所有扭蛋抽取后，点击上方按钮生成你的原创角色！
+                </div>
+                <div class="oc-result" id="ocResult" style="display: none;">
+                    <!-- OC结果将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="action-button reset-button" id="resetButton">
+                    <i class="fas fa-redo"></i> 重置所有扭蛋
+                </button>
+                <button class="action-button download-button" id="downloadButton" disabled>
+                    <i class="fas fa-download"></i> 保存OC角色卡
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <p>OC元素扭蛋机 | 原创角色生成器 | 设计灵感来自各类角色创作工具</p>
+            <p>© 2023 OC Gacha Machine | 仅供娱乐使用</p>
+        </footer>
+    </div>
+
+    <script>
+        // 扭蛋机数据 - 每个类别100个选项
+        const gachaData = {
+            "人设": ["热血莽撞", "傲娇", "三无", "天然呆", "温柔治愈", "高冷孤傲", "元气满满", "忠犬", "病娇", "外冷内热", "社交恐怖分子", "口嫌体正直", "扮猪吃老虎", "常识崩坏", "节能主义", "狂气", "腹黑", "战术大师", "情报通", "理性至上", "毒舌", "幕后操纵者", "恪守荣耀", "异类感", "背负期待", "隐匿本性", "守护执念", "边界行走者", "宅王", "青梅竹马式包容", "天降式闯入", "败犬感", "守护型人格", "复仇驱动", "深度共情", "单推狂热", "人间清醒", "双向暗恋型别扭", "救赎者心态", "反社会", "自毁倾向", "控制狂", "虚无主义", "伪善", "创伤应激", "傲慢", "善妒", "谎言成性", "专制", "吐槽役", "麻烦吸引体质", "吃货属性", "贪财", "自恋", "异性恐惧", "中二病", "游戏脑", "八卦", "利己主义", "武痴", "狂暴化", "圣洁信念", "力量膨胀", "有宿命之敌", "碾压式自信", "成长型心态", "殉道精神", "力量恐惧", "末裔孤独", "玻璃心", "微笑抑郁", "过度共情", "完美主义强迫症", "享受孤独", "沉溺过去", "自卑", "情感寄生", "存在感稀薄", "温柔控制", "机械痴迷", "规则漠视者", "美学至上", "时空抽离感", "概念附身", "第四面墙认知", "混沌善良", "性别认同超然"],
+
+            "职业": ["高中生", "大学生", "程序员", "医生", "教师", "警察", "侦探", "律师", "记者", "摄影师", "艺术家", "音乐家", "作家", "厨师", "咖啡师", "调酒师", "服务员", "快递员", "出租车司机", "飞行员", "空乘", "军人", "消防员", "建筑师", "工程师", "科学家", "研究员", "会计师", "银行职员", "销售员", "模特", "演员", "导演", "声优", "主播", "电竞选手", "游戏设计师", "漫画家", "动画师", "小说家", "编辑", "图书管理员", "考古学家", "历史学家", "语言学家", "翻译", "导游", "运动员", "教练", "裁判", "瑜伽老师", "健身教练", "兽医", "宠物美容师", "花艺师", "园艺师", "农民", "渔民", "矿工", "木匠", "电工", "水管工", "机械师", "魔术师", "占卜师", "牧师", "僧侣", "道士", "阴阳师", "巫女", "忍者", "武士", "骑士", "王子", "公主", "国王", "皇后", "贵族", "商人", "企业家", "投资人", "股票经纪人", "保险顾问", "房地产中介", "室内设计师", "时尚设计师", "珠宝设计师", "手工艺人", "古董商", "拍卖师", "博物馆馆长", "策展人", "音乐制作人", "DJ", "乐队主唱", "吉他手", "钢琴家", "小提琴手", "舞蹈家", "编舞师", "舞台剧演员", "马戏团演员", "杂技演员", "特技演员", "保镖", "私人侦探", "间谍", "黑客", "网络安全专家", "人工智能工程师", "机器人科学家", "宇航员", "天文学家", "地质学家", "海洋学家", "气象学家", "植物学家", "动物学家", "基因工程师", "药剂师", "心理医生", "催眠师", "物理治疗师", "营养师", "针灸师", "按摩师", "葬礼策划师", "入殓师", "犯罪侧写师", "法医", "检察官", "法官", "狱警", "保镖司机", "私人飞机驾驶员", "游艇船长", "潜水教练", "登山向导", "探险家", "赏金猎人", "佣兵", "军火商", "情报贩子", "黑帮成员", "杀手", "盗贼", "欺诈师", "仿造专家", "古董伪造者", "黑客活动家", "匿名者成员", "邪教领袖", "超能力者", "魔法师", "炼金术师", "驱魔师", "吸血鬼猎人", "狼人", "精灵", "兽人", "机甲驾驶员", "宇宙战舰舰长", "外星外交官", "时间旅行者", "平行世界调查员", "神秘组织特工", "古代兵器继承者", "神话生物驯养师", "恶魔契约者", "天使转世", "神明代言人", "异世界勇者", "转生贵族", "迷宫探索者", "地下城城主", "魔王军干部", "圣骑士", "死灵法师", "元素使", "召唤师", "弓箭手", "刺客", "格斗家", "枪手", "重装战士", "治疗师", "吟游诗人", "贤者", "炼金术学者", "符文工匠", "锻造大师", "药剂师", "驯兽师", "植物操纵者", "天气操控者", "精神感应者", "预知能力者", "空间移动者", "时间操控者", "重力操纵者", "念力使用者", "变形能力者", "分身能力者", "透明化能力者", "钢铁能力者", "火焰能力者", "冰冻能力者", "雷电能力者", "大地能力者", "风之能力者", "水之能力者", "光明能力者", "黑暗能力者", "治愈能力者", "诅咒能力者", "记忆操纵者", "情感操纵者", "梦境入侵者", "现实扭曲者", "概念具现者", "规则制定者", "系统管理者", "世界观测者", "次元旅行者", "虚拟偶像", "AI伴侣", "脑机接口测试员", "神经科学家", "记忆编辑师", "梦境导演", "意识上传工程师", "数字永生顾问", "虚拟现实架构师", "元宇宙设计师", "NFT艺术家", "加密货币交易员", "区块链开发者", "量子计算机程序员", "基因编辑伦理师", "克隆技术监管员", "外星语言翻译", "星际外交官", "曲速引擎工程师", "虫洞导航员", "戴森球建造师", "行星改造专家", "宇宙生态学家", "外星考古学家", "多维空间物理学家", "平行宇宙研究员", "时间悖论调解员", "因果律维护者", "命运观测者", "概率操控者", "幸运分配师", "厄运传播者", "愿望实现代理人", "恶魔交易经纪人", "天使投资顾问", "神话生物保护官", "超自然现象调查员", "灵异事件清理师", "鬼屋试睡员", "恐怖游戏测试员", "惊悚小说作家", "黑暗料理厨师", "极限运动教练", "危险实验志愿者", "末日生存专家", "僵尸应对顾问", "外星入侵防御顾问", "超级英雄", "超级反派", "蒙面义警", "改造人", "生化人", "仿生人", "外星混血儿", "基因改造者", "异能失控者", "能力封印者", "诅咒承受者", "契约束缚者", "神器持有者", "古代血脉继承者", "命运之子", "天选之人", "救世主", "灭世者", "旁观者", "记录者", "引导者", "守护者", "背叛者", "殉道者", "复仇者", "流浪者", "隐居者", "探索者", "创造者", "毁灭者", "平衡者"],
+
+            "种族": ["人类", "精灵", "矮人", "兽人", "半兽人", "半精灵", "半身人", "地精", "侏儒", "巨魔", "食人魔", "蜥蜴人", "鱼人", "人鱼", "娜迦", "狼人", "吸血鬼", "亡灵", "骷髅", "幽灵", "恶魔", "天使", "龙族", "半龙人", "翼人", "鸟人", "有翼族", "妖精", "小精灵", "元素精灵", "树精", "树人", "巨人", "石巨人", "熔岩族", "冰霜族", "机械族", "机器人", "仿生人", "赛博格", "AI生命", "能量生命", "星灵", "外星人", "硅基生命", "虫族", "甲壳族", "兽族", "猫族", "犬族", "兔族", "狐族", "熊族", "蛇族", "鹰族", "狮族", "虎族", "豹族", "狼族", "牛族", "马族", "鹿族", "鸟族", "鱼族", "植物族", "菌类族", "岩石族", "沙族", "水族", "火族", "风族", "雷族", "光族", "暗族", "自然灵", "山灵", "水灵", "火灵", "风灵", "土地灵", "森林灵", "海洋灵", "天空灵", "星辰灵", "月灵", "日灵", "季节灵", "梦境灵", "记忆灵", "时间灵", "空间灵", "知识灵", "情感灵", "命运灵", "契约灵", "守护灵", "先祖灵", "战神族", "智慧族", "艺术族", "工匠族", "学者族", "商人族", "农夫族", "猎人族"],
+
+            "武器": ["武士刀", "长剑", "短剑", "巨剑", "刺剑", "双刃剑", "骑士剑", "魔剑", "火焰剑", "冰霜剑", "太刀", "打刀", "胁差", "短刀", "匕首", "军刀", "弯刀", "马刀", "阔剑", "重剑", "单手斧", "双手斧", "战斧", "伐木斧", "长枪", "短枪", "骑枪", "长矛", "短矛", "三叉戟", "长戟", "方天画戟", "战锤", "钉头锤", "链枷", "流星锤", "战棍", "双节棍", "三节棍", "长棍", "短棍", "法杖", "魔杖", "权杖", "仪式杖", "治疗杖", "元素杖", "长弓", "短弓", "复合弓", "反曲弓", "弩", "重弩", "手弩", "连弩", "火枪", "燧发枪", "步枪", "狙击枪", "冲锋枪", "手枪", "左轮手枪", "散弹枪", "机枪", "榴弹枪", "火箭筒", "激光枪", "等离子枪", "能量枪", "音波枪", "重力枪", "冰冻枪", "火焰喷射器", "电击枪", "毒气枪", "麻醉枪", "信号枪", "链锯", "电锯", "旋转锯", "切割器", "能量刃", "光剑", "粒子刀", "振动刀", "袖剑", "指虎", "拳套", "爪", "飞镖", "手里剑", "苦无", "锁镰", "绳镖", "飞刀", "回旋镖", "投石索", "弹弓", "鞭", "长鞭", "短鞭", "九节鞭", "流星镖", "烟雾弹", "闪光弹", "炸弹", "手榴弹", "地雷", "遥控炸弹", "毒药瓶", "燃烧瓶", "腐蚀瓶", "圣水瓶", "魔药瓶", "召唤铃", "契约书", "封印卷轴", "咒符", "护身符"],
+
+            "时代": ["石器时代", "青铜时代", "铁器时代", "古典时代", "中世纪", "文艺复兴", "大航海时代", "启蒙时代", "工业革命", "维多利亚时代", "爱德华时代", "一战前夜", "一战时期", "战间期", "二战时期", "冷战初期", "冷战中期", "冷战后期", "信息时代", "数字时代", "人工智能时代", "基因编辑时代", "太空殖民初期", "星际联邦时代", "后人类时代", "赛博朋克时代", "蒸汽朋克时代", "柴油朋克时代", "原子朋克时代", "生物朋克时代", "纳米朋克时代", "神话时代", "英雄时代", "诸神黄昏", "失落的古文明", "剑与魔法时代", "高魔幻想时代", "低魔幻想时代", "末法时代", "灵气复苏时代", "武侠鼎盛期", "江湖纷争期", "仙魔大战期", "修真盛世", "天庭统治期", "地府建立期", "洪荒时代", "太古时代", "上古时代", "中古时代", "近古时代", "大灾变后", "废土重建期", "末日幸存期", "僵尸爆发期", "外星入侵期", "怪兽横行期", "超能力觉醒期", "魔法突然降临", "科技与魔法并存", "蒸汽魔法时代", "电气魔法时代", "星际魔法时代", "时间线混乱期", "平行宇宙交汇", "维度重叠时代", "现实稳定锚失效期", "概念实体化时代", "规则改写期", "因果律松动期", "命运纺织期", "预言满天飞时代", "许愿机泛滥期", "神明行走人间", "恶魔降临现世", "天使与人类共处", "人神混居时代", "信仰战争期", "圣战时期", "神权统治期", "无神论崛起期", "机械飞升初期", "意识上传实验期", "虚拟永生普及期", "元宇宙统治期", "现实边缘化时代", "记忆交易合法化", "情感成为货币", "梦境共享时代", "思维联网初期", "集体意识形成期", "个体性危机时代", "全面监控社会", "感官控制社会", "知识管制时代", "生存竞技统治", "能力分类社会", "隔离实验时代", "阶层绝对隔离", "仿生人叛乱期", "义体化普及期", "心理监测社会", "异能恐惧时代"],
+
+            "发色": ["黑色", "深棕色", "棕色", "浅棕色", "栗色", "巧克力色", "红棕色", "亚麻色", "金色", "白金发", "浅金色", "蜂蜜金", "草莓金", "银白色", "灰白色", "灰色", "深灰色", "银灰色", "蓝灰色", "红色", "深红色", "酒红色", "绯红色", "橘红色", "铜红色", "玫瑰金", "粉色", "樱花粉", "珊瑚粉", "桃粉色", "淡粉色", "热粉色", "紫色", "深紫色", "薰衣草紫", "紫罗兰色", "蓝紫色", "淡紫色", "蓝色", "深蓝色", "宝蓝色", "天蓝色", "冰蓝色", "湖蓝色", "钴蓝色", "蓝绿色", "绿色", "深绿色", "翡翠绿", "薄荷绿", "草绿色", "橄榄绿", "黄绿色", "黄色", "柠檬黄", "淡黄色", "金色偏黄", "琥珀色", "橙色", "亮橙色", "珊瑚橙", "蜜橙色", "铜橙色", "白色", "雪白色", "珍珠白", "奶油白", "米白色", "渐变色", "彩虹色", "星空渐变", "海洋渐变", "火焰渐变", "双色挑染", "多色混染", "隐藏染", "发尾染", "挂耳染", "挑染金色", "挑染粉色", "挑染蓝色", "挑染紫色", "斑马纹", "豹纹发", "蛇纹发", "几何染", "不对称染", "星空蓝", "极光紫", "银河灰", "暮光橙", "晨曦粉", "午夜蓝", "正午金", "傍晚紫", "荧光粉", "荧光绿", "荧光蓝", "荧光橙", "金属银", "金属金", "金属铜", "金属蓝", "珠光白", "珠光粉", "珠光蓝", "珠光紫", "透明感银灰", "透明感水蓝", "透明感薄粉", "透明感淡紫"],
+
+            "眼睛": ["黑色", "深棕色", "棕色", "浅棕色", "琥珀色", "蜜糖色", "金色", "浅金色", "蜂蜜金", "银灰色", "灰色", "蓝灰色", "烟灰色", "钢灰色", "冰蓝色", "天蓝色", "湛蓝色", "深蓝色", "宝蓝色", "钴蓝色", "湖蓝色", "海洋蓝", "星空蓝", "蓝绿色", "翠绿色", "翡翠绿", "深绿色", "草绿色", "橄榄绿", "黄绿色", "薄荷绿", "浅绿色", "紫色", "深紫色", "薰衣草紫", "紫罗兰色", "蓝紫色", "淡紫色", "粉紫色", "红色", "深红色", "绯红色", "玫瑰红", "酒红色", "暗红色", "橘红色", "橙色", "亮橙色", "琥珀橙", "铜橙色", "蜜橙色", "粉色", "樱花粉", "珊瑚粉", "桃粉色", "淡粉色", "热粉色", "玫瑰粉", "黄色", "柠檬黄", "淡黄色", "金黄", "琥珀黄", "浅黄色", "白色", "珍珠白", "雪白色", "冰白色", "奶油白", "异色瞳", "左蓝右金", "左绿右棕", "左紫右灰", "上蓝下金", "外圈蓝内圈金", "外圈绿内圈黄", "渐变色", "蓝绿渐变", "紫粉渐变", "金棕渐变", "星空瞳", "银河瞳", "极光瞳", "火焰瞳", "海洋瞳", "森林瞳", "金属色", "金属银", "金属金", "金属铜", "金属蓝", "珠光色", "珠光白", "珠光粉", "珠光蓝", "荧光色", "荧光绿", "荧光蓝", "荧光粉", "透明感", "透明蓝", "透明紫", "透明灰", "虹彩变幻", "虹彩蓝紫", "虹彩金绿", "水晶质感", "水晶蓝", "水晶紫", "水晶绿", "兽瞳", "竖瞳", "猫眼状", "蛇瞳状", "龙瞳", "魔瞳", "圣瞳", "轮回眼状", "写轮眼状", "万花筒状"],
+
+            "发型": ["短发", "齐耳短发", "波波头", "精灵短发", "超短发", "中长发", "齐肩发", "锁骨发", "长发", "及腰长发", "齐刘海", "斜刘海", "空气刘海", "八字刘海", "无刘海", "中分", "侧分", "大背头", "油头", "蓬松短发", "纹理短发", "卷发", "大波浪", "小波浪", "螺旋卷", "羊毛卷", "泡面卷", "自然卷", "直发", "离子烫直发", "碎发", "层次剪", "公主切", "姬发式", "不对称短发", "不对称长发", "双马尾", "高双马尾", "低双马尾", "侧马尾", "单马尾", "高马尾", "低马尾", "丸子头", "高丸子头", "低丸子头", "双丸子头", "哪吒头", "麻花辫", "双麻花辫", "侧麻花辫", "鱼骨辫", "法式辫", "脏辫", "雷鬼头", "非洲辫", "玉米辫", "编发", "盘发", "发髻", "发辫盘发", "半扎发", "半披发", "公主头", "淑女髻", "道士头", "武士髻", "古风发髻", "马尾辫", "冲天辫", "苹果头", "菠萝头", "爆炸头", "蘑菇头", "锅盖头", "寸头", "平头", "圆寸", "板寸", "莫西干头", "飞机头", "刺猬头", "扫把头", "碎发刘海", "狗啃刘海", "眉上刘海", "厚刘海", "薄刘海", "卷刘海", "龙须刘海", "胎毛刘海", "羊毛卷刘海", "水母头", "狼尾头", "鲻鱼头", "公主切改良", "复古卷发", "法式慵懒卷", "韩式气垫烫", "日式自然卷", "欧美大波浪", "泰式编发", "非洲风编发", "古埃及发辫", "古希腊发髻", "中世纪贵族卷", "维多利亚卷", "民国学生头", "复古手推波", "迪斯科爆炸头", "朋克刺猬头", "哥特式盘发", "洛丽塔卷发", "原宿风彩色", "赛博朋克编发", "未来感短发"],
+
+            "锚点": ["刀疤", "泪痣", "雀斑", "酒窝", "虎牙", "单边耳环", "唇环", "鼻环", "眉钉", "舌钉", "颈环", "项圈", "锁骨链", "腰链", "脚链", "手链", "金属义肢", "木制义肢", "义眼", "眼罩", "单片眼镜", "圆框眼镜", "面纱", "面具", "半脸面具", "呼吸面罩", "助听器", "断角", "独角", "恶魔角", "龙角", "鹿角", "兽耳", "猫耳", "狗耳", "兔耳", "狐耳", "熊耳", "折耳", "翅膀", "单翼", "残翼", "龙翼", "天使翼", "恶魔翼", "蝶翼", "鸟翼", "蝠翼", "骨翼", "火焰纹身", "冰霜纹身", "植物藤蔓", "花朵头饰", "荆棘王冠", "金属头冠", "宝石额饰", "眉心朱砂", "额前纹章", "脸颊刺青", "颈侧纹身", "手背纹章", "指节刺青", "手臂图腾", "背部刺青", "肋骨纹身", "脚踝纹身", "疤痕覆盖", "奴隶烙印", "家族徽记", "契约印记", "诅咒刻印", "圣痕", "魔法符文", "元素印记", "龙族契约", "精灵祝福", "恶魔烙印", "天使赐福", "兽人图腾", "血族齿痕", "狼人抓痕", "妖精翅膀印记", "亡灵诅咒", "神明祝福", "先知预言印记", "命运红线", "时间沙漏印记", "空间坐标纹身", "因果锁链", "真理之眼", "虚无法则侵蚀", "存在证明", "观测者标记", "宿命刻印", "轮回印记", "转生标记", "灵魂绑定契约", "血脉觉醒印记", "力量封印符文", "记忆封印刻印", "情感烙印", "誓言印记", "背叛伤痕", "救赎印记", "堕落标记", "永恒誓言契约"],
+
+            "着装": ["西装", "燕尾服", "晚礼服", "旗袍", "汉服", "和服", "韩服", "巫女服", "僧袍", "道袍", "军装", "警服", "消防服", "白大褂", "实验服", "厨师服", "服务生制服", "学生制服", "水手服", "英伦学院装", "运动服", "篮球服", "足球服", "泳装", "比基尼", "连体泳衣", "沙滩装", "休闲T恤", "牛仔裤", "卫衣", "夹克", "皮衣", "风衣", "大衣", "羽绒服", "睡衣", "家居服", "婚纱", "西式婚纱", "中式嫁衣", "伴娘裙", "伴郎西装", "小礼服", "公主裙", "洛丽塔裙", "哥特装", "朋克服", "摇滚皮衣", "嘻哈卫衣", "街头潮服", "复古连衣裙", "波西米亚长裙", "民族服饰", "部落装", "古埃及长袍", "古希腊希顿", "罗马托加", "中世纪贵族裙", "文艺复兴礼服", "维多利亚裙撑", "爱德华西装", "民国长衫", "知青装", "工装裤", "牛仔套装", "探险服", "登山装", "骑行服", "赛车服", "飞行员夹克", "潜水服", "防护服", "机甲驾驶服", "太空服", "未来战斗服", "赛博格植入装", "蒸汽朋克装", "柴油朋克工装", "忍者夜行衣", "武士铠甲", "骑士盔甲", "法师长袍", "巫师斗篷", "祭司圣袍", "圣骑士重甲", "刺客紧身衣", "猎人皮甲", "游侠轻甲", "精灵叶甲", "矮人锻造甲", "兽人骨甲", "龙鳞铠甲", "恶魔战甲", "天使羽衣", "吸血鬼礼服", "狼人毛皮", "亡灵裹尸布", "元素法袍", "召唤师法衣", "炼金术士袍", "吟游诗人装", "驯兽师皮装", "海盗船长服", "海盗水手装", "贵族礼服", "宫廷舞裙", "农家布衣", "铁匠围裙", "牧师祭袍", "修女服"]
+        };
+
+        // 奶油色系颜色方案
+        const pastelColors = [
+            "linear-gradient(135deg, #ffccd5 0%, #f6a8a8 100%)",
+            "linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%)",
+            "linear-gradient(135deg, #b3e5fc 0%, #81d4fa 100%)",
+            "linear-gradient(135deg, #fff3e0 0%, #ffccbc 100%)",
+            "linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%)",
+            "linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%)",
+            "linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%)",
+            "linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)",
+            "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)",
+            "linear-gradient(135deg, #ede7f6 0%, #d1c4e9 100%)"
+        ];
+
+        // 当前抽取结果
+        let currentResults = {};
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            initGachaMachines();
+            bindEvents();
+        };
+
+        // 初始化所有扭蛋机
+        function initGachaMachines() {
+            const gachaSection = document.getElementById('gachaSection');
+            gachaSection.innerHTML = '';
+            const categories = Object.keys(gachaData);
+
+            // 为每个类别创建扭蛋机
+            categories.forEach((category, index) => {
+                const colorIndex = index % pastelColors.length;
+                const gachaMachine = document.createElement('div');
+                gachaMachine.className = 'gacha-machine';
+                gachaMachine.id = `gacha-${category}`;
+
+                gachaMachine.innerHTML = `
+                    <div class="gacha-header">
+                        <div class="gacha-title">
+                            <div class="gacha-icon" style="background: ${pastelColors[colorIndex]}">
+                                <i class="fas fa-${getIconForCategory(category)}"></i>
+                            </div>
+                            ${category}
+                        </div>
+                    </div>
+                    <div class="gacha-display">
+                        <div class="element-placeholder" id="placeholder-${category}">
+                            点击下方按钮抽取${category}
+                        </div>
+                        <div class="element-result" id="result-${category}" style="display: none;"></div>
+                    </div>
+                    <button class="spin-button" data-category="${category}" style="background: ${pastelColors[colorIndex]}">
+                        <i class="fas fa-gamepad"></i> 抽取${category}
+                    </button>
+                `;
+
+                gachaSection.appendChild(gachaMachine);
+            });
+
+            // 重置当前结果
+            currentResults = {};
+            updateCombineButton();
+            updateDownloadButton();
+        }
+
+        // 根据类别获取图标
+        function getIconForCategory(category) {
+            const icons = {
+                "人设": "heart",
+                "职业": "briefcase",
+                "种族": "users",
+                "武器": "star",
+                "时代": "clock",
+                "发色": "paint-brush",
+                "眼睛": "eye",
+                "发型": "cut",
+                "锚点": "gem",
+                "着装": "tshirt"
+            };
+            return icons[category] || "question-circle";
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 扭蛋机按钮点击事件
+            document.querySelectorAll('.spin-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    spinGacha(category);
+                });
+            });
+
+            // 组合按钮点击事件
+            document.getElementById('combineButton').addEventListener('click', combineOC);
+
+            // 重置按钮点击事件
+            document.getElementById('resetButton').addEventListener('click', initGachaMachines);
+
+            // 下载按钮点击事件
+            document.getElementById('downloadButton').addEventListener('click', downloadOC);
+        }
+
+        // 扭蛋抽取
+        function spinGacha(category) {
+            const button = document.querySelector(`.spin-button[data-category="${category}"]`);
+            const placeholder = document.getElementById(`placeholder-${category}`);
+            const result = document.getElementById(`result-${category}`);
+            const gachaMachine = document.getElementById(`gacha-${category}`);
+
+            // 禁用按钮并显示旋转动画
+            button.disabled = true;
+            const icon = button.querySelector('i');
+            icon.classList.add('spinning');
+
+            // 隐藏结果，显示抽取动画
+            result.style.display = 'none';
+            placeholder.textContent = '抽取中...';
+            gachaMachine.classList.add('active');
+
+            // 模拟抽取过程
+            setTimeout(() => {
+                // 从对应类别中随机选择一个元素
+                const items = gachaData[category];
+                const randomIndex = Math.floor(Math.random() * items.length);
+                const selectedItem = items[randomIndex];
+
+                // 更新结果显示
+                placeholder.style.display = 'none';
+                result.textContent = selectedItem;
+                result.style.display = 'block';
+
+                // 保存结果
+                currentResults[category] = selectedItem;
+
+                // 恢复按钮状态
+                button.disabled = false;
+                icon.classList.remove('spinning');
+
+                // 更新组合按钮状态
+                updateCombineButton();
+            }, 1500);
+        }
+
+        // 更新组合按钮状态
+        function updateCombineButton() {
+            const categories = Object.keys(gachaData);
+            const allSelected = categories.every(category => currentResults[category] !== undefined);
+            const combineButton = document.getElementById('combineButton');
+
+            combineButton.disabled = !allSelected;
+        }
+
+        // 更新下载按钮状态
+        function updateDownloadButton() {
+            const ocResult = document.getElementById('ocResult');
+            const downloadButton = document.getElementById('downloadButton');
+            downloadButton.disabled = ocResult.style.display === 'none';
+        }
+
+        // 组合生成OC
+        function combineOC() {
+            const ocPlaceholder = document.getElementById('ocPlaceholder');
+            const ocResult = document.getElementById('ocResult');
+
+            // 隐藏占位符，显示结果
+            ocPlaceholder.style.display = 'none';
+            ocResult.style.display = 'block';
+
+            // 生成角色介绍文本
+            const categories = Object.keys(gachaData);
+            let detailsHtml = '';
+
+            categories.forEach(category => {
+                detailsHtml += `
+                    <div class="oc-detail-item">
+                        <div class="detail-label">${category}</div>
+                        <div class="detail-value">${currentResults[category]}</div>
+                    </div>
+                `;
+            });
+
+            // 生成角色背景故事（基于抽取的元素）
+            const backstory = generateBackstory(currentResults);
+
+            // 更新结果HTML
+            ocResult.innerHTML = `
+                <div class="oc-intro">
+                    <div class="oc-intro-title">角色简介</div>
+                    <p>${backstory}</p>
+                </div>
+                <div class="oc-details">
+                    ${detailsHtml}
+                </div>
+            `;
+
+            // 更新下载按钮状态
+            updateDownloadButton();
+        }
+
+        // 生成角色背景故事
+        function generateBackstory(results) {
+            // 根据抽取的元素生成一段连贯的背景故事
+            return `${results.种族}中的${results.人设}类型${results.职业}，活跃于${results.时代}。拥有${results.发色}的${results.发型}和${results.眼睛}的独特眼眸，最引人注目的是${results.锚点}。平时穿着${results.着装}，擅长使用${results.武器}执行任务。在动荡的时代背景下，这个角色既保持着自己的独特个性，又在历史的洪流中书写着属于自己的传奇。`;
+        }
+
+        // 下载OC角色卡 - 增强版
+        function downloadOC() {
+            const ocDisplay = document.querySelector('.oc-display');
+
+            // 添加截图模式类，增强样式
+            ocDisplay.classList.add('screenshot-mode');
+
+            // 配置html2canvas选项，提高渲染质量
+            const options = {
+                scale: 3, // 提高分辨率到3倍
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#fef5e7', // 使用更饱满的背景色
+                logging: false,
+                letterRendering: true,
+                removeContainer: false,
+                // 改进的渲染选项
+                imageTimeout: 0, // 无限期等待图片加载
+                ignoreElements: (element) => {
+                    // 忽略可能导致问题的元素
+                    return element.tagName === 'SCRIPT' || element.tagName === 'STYLE';
+                }
+            };
+
+            // 确保元素在视口中可见
+            ocDisplay.scrollIntoView({
+                behavior: 'instant',
+                block: 'center'
+            });
+
+            // 短暂延迟后截图，确保元素完全渲染和样式应用
+            setTimeout(() => {
+                html2canvas(ocDisplay, options).then(canvas => {
+                    // 创建下载链接
+                    const link = document.createElement('a');
+                    link.download = 'oc-character-card.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    // 移除截图模式类
+                    ocDisplay.classList.remove('screenshot-mode');
+                }).catch(error => {
+                    console.error('截图失败:', error);
+                    alert('截图失败，请重试');
+
+                    // 确保移除截图模式类
+                    ocDisplay.classList.remove('screenshot-mode');
+                });
+            }, 800);
+        }
+    </script>
+</body>
+
+</html>
